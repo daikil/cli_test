@@ -1,7 +1,9 @@
-import fs from "node:fs";
-import { fileURLToPath } from "node:url";
+import path from 'node:path';
 import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
+import { getPackageName } from './lib/name.js';
+import { readMarkdownFileSync } from './lib/file.js';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,17 +20,11 @@ const { argv } = yargs(hideBin(process.argv))
 
 //nameオプションのチェック
 if(argv.name){
-    const packageStr = fs.readFileSync(path.resolve(__dirname, "package.json"), {
-        encoding: "utf-8"
-    });
-    const myPackage = JSON.parse(packageStr);
-    console.log(myPackage.name);
-
+    const name = getPackageName();
+    console.log(name);
     //nameオプションが入ってた場合は他のオプションを使わないので正常終了させる
     process.exit(0);
 }
-//指定されたMarkdownファイルを読み込む
-const markdownStr = fs.readFileSync(path.resolve(__dirname, argv.file), {
-    encoding: "utf-8"
-});
+//絶対パスを指定してファイルを読み込む
+const markdownStr = readMarkdownFileSync(path.resolve(__dirname, argv.file));
 console.log(markdownStr);
